@@ -329,9 +329,17 @@ function UserAdminContainer(props: Props): JSX.Element {
       key: "real_name",
     },
     {
-      title: "申诉类型",
+      title: "案件类型",
       dataIndex: "type",
       key: "type",
+      render: (v: number): JSX.Element => (
+        <span>
+          {(v === 1 && "文书起草") ||
+            (v === 2 && "案件委托") ||
+            (v === 3 && "法律顾问") ||
+            (v === 4 && "案件查询")}
+        </span>
+      ),
     },
     {
       title: "申诉原因",
