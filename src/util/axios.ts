@@ -2,6 +2,8 @@
 
 import { baseUrl } from "../config";
 import axios from "axios";
+import { message } from "antd";
+
 // import stringify from "qs-stringify";
 
 // 不需要下面这些mock配置，仅本地发布DEMO用
@@ -29,18 +31,19 @@ axios.interceptors.request.use(
     return Promise.resolve(err);
   }
 );
-axios.interceptors.response.use((response) => {
+axios.interceptors.response.use((response: any) => {
+  const code = response?.code;
   // const code = response?.data?.code ?? 200;
   // 没有权限，登录超时，登出，跳转登录
-  // if (code === 3) {
-  //   message.error("登录超时，请重新登录");
-  //   sessionStorage.removeItem("userinfo");
-  //   setTimeout(() => {
-  //     window.location.href = "/";
-  //   }, 1500);
-  // } else {
-  //   return response.data;
-  // }
+  if (code === "TOKEN_INVAILD") {
+    message.error("登录超时，请重新登录");
+    sessionStorage.removeItem("userinfo");
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 1500);
+  } else {
+    return response.data;
+  }
   return response.data;
 });
 

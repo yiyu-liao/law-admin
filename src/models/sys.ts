@@ -466,7 +466,16 @@ export default {
         message.error("网络错误，请重试");
       }
       return;
-    }
+    },
 
+    async getCaseDetail(params: { case_id: string }) {
+      try {
+        const res: Res = await axios.post("/case/detail", params);
+        return res;
+      } catch (err) {
+        message.error("网络错误，请重试");
+      }
+      return;
+    }
   }),
 };

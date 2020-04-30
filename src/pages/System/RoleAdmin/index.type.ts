@@ -13,7 +13,7 @@ export interface TableRecordData {
   real_name: string; // 真实名字
   phone: string | number; // 手机
   role: string; // 角色
-  verify_status: string; // 是否验证，2: 待验证，3: 已验证
+  verify_status: number; // 是否验证，2: 待验证，3: 已验证
   create_time: string; // 创建时间
   extra_profile?: any; // 额外信息
 }
@@ -28,7 +28,7 @@ export type operateType = "add" | "see" | "up";
 
 export interface ModalType {
   operateType: operateType;
-  nowData: UserBasicInfoParam | null;
+  nowData: any | null;
   modalShow: boolean;
   modalLoading: boolean;
 }

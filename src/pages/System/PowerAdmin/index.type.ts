@@ -16,29 +16,13 @@ export interface TableRecordData {
   payOrder: any;
 }
 
-// id: 1
-// out_refund_no: "20200302145644674491"
-// reason: "七天无理由"
-// status: 0
-// createTime: "2020-04-07T06:56:44.758Z"
-// case: {id: 1, select_lawyer_id: null, case_type: 1, extra_info: null, status: 3,…}
-// payOrder: null
-// appealer: {id: 1, openid: "aa", avatar_url: null, nick_name: "test", real_name: "吴彦祖", role: 0, verify_status: 3,…}
-// id: 1
-// openid: "aa"
-// avatar_url: null
-// nick_name: "test"
-// real_name: "吴彦祖"
-// role: 0
-// verify_status: 3
-
 export interface Page {
   pageNum: number;
   pageSize: number;
   total: number;
 }
 
-export type operateType = "reject";
+export type operateType = "reject" | "see" | "detail";
 
 export interface ModalType {
   operateType: operateType;

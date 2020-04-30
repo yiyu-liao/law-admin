@@ -6,6 +6,8 @@
 import React, { useState, useMemo } from "react";
 import { useSetState, useMount } from "react-use";
 import { connect } from "react-redux";
+import { PhotoProvider, PhotoConsumer } from "react-photo-view";
+import "react-photo-view/dist/index.css";
 import {
   Form,
   Button,
@@ -113,7 +115,6 @@ function RoleAdminContainer(props: Props): JSX.Element {
     onGetData(page);
   });
 
-
   // 函数 - 查询当前页面所需列表数据
   async function onGetData(page: {
     pageNum: number;
@@ -169,6 +170,7 @@ function RoleAdminContainer(props: Props): JSX.Element {
     data: TableRecordData | null,
     type: operateType
   ): void => {
+    console.log("darq", data);
     setModal({
       modalShow: true,
       nowData: data,
@@ -277,8 +279,8 @@ function RoleAdminContainer(props: Props): JSX.Element {
     const res: Res = await props.updateUserStatus({
       user_id: id,
       base_info: {
-        verify_status: 3
-      }
+        verify_status: 3,
+      },
     });
     if (res?.code === "S_Ok") {
       onGetData(page);
@@ -303,7 +305,7 @@ function RoleAdminContainer(props: Props): JSX.Element {
       key: "real_name",
     },
     {
-      title: "电话",
+      title: "联系方式",
       dataIndex: "phone",
       key: "phone",
     },
@@ -360,6 +362,7 @@ function RoleAdminContainer(props: Props): JSX.Element {
             <Button
               type="primary"
               size="small"
+              disabled={record.verify_status === 3}
               onClick={() => onAggress(record.id)}
             >
               同意
@@ -435,7 +438,7 @@ function RoleAdminContainer(props: Props): JSX.Element {
       <Modal
         title={{ add: "新增", up: "修改", see: "查看" }[modal.operateType]}
         visible={modal.modalShow}
-        onOk={onOk}
+        onOk={onClose}
         onCancel={onClose}
         confirmLoading={modal.modalLoading}
       >
@@ -445,118 +448,43 @@ function RoleAdminContainer(props: Props): JSX.Element {
             formConditions: 1,
           }}
         >
-          <Form.Item
-            label="用户名"
-            name="formUsername"
-            {...formItemLayout}
-            rules={[
-              { required: true, whitespace: true, message: "必填" },
-              { max: 12, message: "最多输入12位字符" },
-            ]}
-          >
-            aaa
+          <Form.Item label="律师照片" name="lawyer" {...formItemLayout}>
+            <PhotoProvider>
+              <PhotoConsumer
+                src={modal.nowData?.extra_profile?.id_photo}
+                intro={modal.nowData?.extra_profile?.id_photo}
+              >
+                <img src={modal.nowData?.extra_profile?.id_photo} alt="" />
+              </PhotoConsumer>
+            </PhotoProvider>
           </Form.Item>
-          {/* <Form.Item
-            label="密码"
-            name="formPassword"
-            {...formItemLayout}
-            rules={[
-              { required: true, whitespace: true, message: "必填" },
-              { min: 6, message: "最少输入6位字符" },
-              { max: 18, message: "最多输入18位字符" },
-            ]}
-          >
-            <Input
-              type="password"
-              placeholder="请输入密码"
-              disabled={modal.operateType === "see"}
-            />
+          <Form.Item label="姓名" name="lawyer" {...formItemLayout}>
+            {modal.nowData?.real_name}
           </Form.Item>
-          <Form.Item
-            label="电话"
-            name="formPhone"
-            {...formItemLayout}
-            rules={[
-              () => ({
-                validator: (rule, value) => {
-                  const v = value;
-                  if (v) {
-                    if (!tools.checkPhone(v)) {
-                      return Promise.reject("请输入有效的手机号码");
-                    }
-                  }
-                  return Promise.resolve();
-                },
-              }),
-            ]}
-          >
-            <Input
-              placeholder="请输入手机号"
-              maxLength={11}
-              disabled={modal.operateType === "see"}
-            />
+          <Form.Item label="所在律所" name="lawyer" {...formItemLayout}>
+            {modal.nowData?.extra_profile?.office}
           </Form.Item>
-          <Form.Item
-            label="邮箱"
-            name="formEmail"
-            {...formItemLayout}
-            rules={[
-              () => ({
-                validator: (rule, value) => {
-                  const v = value;
-                  if (v) {
-                    if (!tools.checkEmail(v)) {
-                      return Promise.reject("请输入有效的邮箱地址");
-                    }
-                  }
-                  return Promise.resolve();
-                },
-              }),
-            ]}
-          >
-            <Input
-              placeholder="请输入邮箱地址"
-              disabled={modal.operateType === "see"}
-            />
+          <Form.Item label="联系方式" name="lawyer" {...formItemLayout}>
+            {modal.nowData?.phone}
           </Form.Item>
-          <Form.Item
-            label="描述"
-            name="formDesc"
-            {...formItemLayout}
-            rules={[{ max: 100, message: "最多输入100个字符" }]}
-          >
-            <TextArea
-              rows={4}
-              disabled={modal.operateType === "see"}
-              autoSize={{ minRows: 2, maxRows: 6 }}
-            />
+          <Form.Item label="地址" name="lawyer" {...formItemLayout}>
+            {modal.nowData?.extra_profile?.office_address}
           </Form.Item>
-          <Form.Item
-            label="状态"
-            name="formConditions"
-            {...formItemLayout}
-            rules={[{ required: true, message: "请选择状态" }]}
-          >
-            <Select disabled={modal.operateType === "see"}>
-              <Option key={1} value={1}>
-                启用
-              </Option>
-              <Option key={-1} value={-1}>
-                禁用
-              </Option>
-            </Select>
-          </Form.Item> */}
+          <Form.Item label="经历年限" name="lawyer" {...formItemLayout}>
+            {modal.nowData?.extra_profile?.experience_year}年
+          </Form.Item>
+          <Form.Item label="律师证件" name="lawyer" {...formItemLayout}>
+            <PhotoProvider>
+              <PhotoConsumer
+                src={modal.nowData?.extra_profile?.license_photo}
+                intro={modal.nowData?.extra_profile?.license_photo}
+              >
+                <img src={modal.nowData?.extra_profile?.license_photo} alt="" />
+              </PhotoConsumer>
+            </PhotoProvider>
+          </Form.Item>
         </Form>
       </Modal>
-      <RoleTree
-        title={"分配角色"}
-        data={role.roleData}
-        visible={role.roleTreeShow}
-        defaultKeys={role.roleTreeDefault}
-        loading={role.roleTreeLoading}
-        onOk={onRoleOk}
-        onClose={onRoleClose}
-      />
     </div>
   );
 }

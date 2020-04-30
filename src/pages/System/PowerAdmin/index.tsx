@@ -6,6 +6,9 @@
 import React, { useState, useMemo } from "react";
 import { useSetState, useMount } from "react-use";
 import { connect } from "react-redux";
+
+import { PhotoProvider, PhotoConsumer } from "react-photo-view";
+import "react-photo-view/dist/index.css";
 import {
   Form,
   Button,
@@ -77,6 +80,7 @@ type Props = ReturnType<typeof mapState> & ReturnType<typeof mapDispatch>;
 function UserAdminContainer(props: Props): JSX.Element {
   // const p = props.powersCode; // 用户拥有的所有权限code
   const [form] = Form.useForm();
+  const [detailForm] = Form.useForm();
 
   const [data, setData] = useState<TableRecordData[]>([]); // 当前页面列表数据
   const [loading, setLoading] = useState(false); // 数据是否正在加载中
@@ -91,6 +95,13 @@ function UserAdminContainer(props: Props): JSX.Element {
   // 模态框相关参数
   const [modal, setModal] = useSetState<ModalType>({
     operateType: "reject", // see查看，add添加，up修改
+    nowData: null,
+    modalShow: false,
+    modalLoading: false,
+  });
+
+  const [detailModel, setDetailModal] = useSetState<any>({
+    operateType: "detail", // see查看，add添加，up修改
     nowData: null,
     modalShow: false,
     modalLoading: false,
@@ -182,7 +193,6 @@ function UserAdminContainer(props: Props): JSX.Element {
   // };
 
   const rejectCaseStatusChange = (e: any): void => {
-    console.log("aa", e)
     form.setFieldsValue({
       changeStatus: e.target.value,
     });
@@ -226,6 +236,43 @@ function UserAdminContainer(props: Props): JSX.Element {
     });
   };
 
+  const onDetailShow = async (
+    data: TableRecordData | null,
+    type: operateType
+  ): Promise<void> => {
+    const res = await props.getCaseDetail({
+      case_id: data?.case.id,
+    });
+    console.log(res)
+    setDetailModal({
+      modalShow: true,
+      nowData: res?.data,
+      operateType: type,
+    });
+    // 用setTimeout是因为首次让Modal出现时得等它挂载DOM，不然form对象还没来得及挂载到Form上
+    setTimeout(() => {
+      // form.setFieldsValue({
+      //   changeStatus: 2,
+      //   rejectReson: "",
+      // });
+      // form.resetFields();
+      // if (type === "add") {
+      //   // 新增，需重置表单各控件的值
+      //   form.resetFields();
+      // } else if (data) {
+      //   // 查看或修改，需设置表单各控件的值为当前所选中行的数据
+      //   form.setFieldsValue({
+      //     formConditions: data.conditions,
+      //     formDesc: data.desc,
+      //     formUsername: data.username,
+      //     formPhone: data.phone,
+      //     formEmail: data.email,
+      //     formPassword: data.password,
+      //   });
+      // }
+    });
+  };
+
   /** 模态框确定 **/
   const onOk = async (data: TableRecordData): Promise<void> => {
     const values = await form.validateFields();
@@ -235,7 +282,7 @@ function UserAdminContainer(props: Props): JSX.Element {
       case_id: data.case.id,
       appeal_id: data.id,
       client_id: data.appealer.id,
-      lawyer_id: "",
+      lawyer_id: data.case.select_lawyer_id,
     };
 
     try {
@@ -277,13 +324,17 @@ function UserAdminContainer(props: Props): JSX.Element {
     });
   };
 
+  const onDetailClose = () => {
+    setDetailModal({
+      modalShow: false,
+    });
+  };
+
   const onAggress = async (data: TableRecordData) => {
     const res = await props.onAgress({
       appeal_id: data.id,
-      case_id: data.case.id,
       client_id: data.appealer.id,
-      la: "",
-      is_normal_user: true,
+      lawyer_id: data.case.select_lawyer_id,
     });
 
     if (res && res.code === "S_Ok") {
@@ -342,6 +393,11 @@ function UserAdminContainer(props: Props): JSX.Element {
       ),
     },
     {
+      title: "涉及金额",
+      dataIndex: "total_fee",
+      key: "total_fee",
+    },
+    {
       title: "申诉原因",
       dataIndex: "reason",
       key: "reason",
@@ -387,7 +443,7 @@ function UserAdminContainer(props: Props): JSX.Element {
             <span
               key="0"
               className="control-btn green"
-              // onClick={() => onModalShow(record, "see")}
+              onClick={() => onDetailShow(record, "detail")}
             >
               <Tooltip placement="top" title="查看">
                 <EyeOutlined />
@@ -465,6 +521,7 @@ function UserAdminContainer(props: Props): JSX.Element {
         id: item.id,
         real_name: item.appealer.real_name,
         type: item.case?.case_type,
+        total_fee: item.payOrder?.total_fee,
         reason: item.reason,
         status: item.status,
         phone: item.appealer.phone,
@@ -495,7 +552,7 @@ function UserAdminContainer(props: Props): JSX.Element {
       </div>
       {/* 新增&修改&查看 模态框 */}
       <Modal
-        title={{ reject: "拒绝" }[modal.operateType]}
+        title={{ reject: "拒绝申诉" }[modal.operateType]}
         visible={modal.modalShow}
         onOk={() => onOk(modal.nowData)}
         onCancel={onClose}
@@ -523,6 +580,57 @@ function UserAdminContainer(props: Props): JSX.Element {
           </Form.Item>
         </Form>
       </Modal>
+
+      <Modal
+        title={{ detail: "服务律师详情" }[detailModel.operateType]}
+        visible={detailModel.modalShow}
+        onOk={onDetailClose}
+        onCancel={onDetailClose}
+        confirmLoading={detailModel.modalLoading}
+      >
+        <Form
+          form={detailForm}
+          initialValues={{
+            formConditions: 1,
+          }}
+        >
+          <Form.Item label="律师照片" name="lawyer" {...formItemLayout}>
+            <PhotoProvider>
+              <PhotoConsumer
+                src={detailModel.nowData?.selectLawyer.extra_profile?.id_photo}
+                intro={detailModel.nowData?.selectLawyer.extra_profile?.id_photo}
+              >
+                <img src={detailModel.nowData?.selectLawyer.extra_profile?.id_photo} alt="" />
+              </PhotoConsumer>
+            </PhotoProvider>
+          </Form.Item>
+          <Form.Item label="姓名" name="lawyer" {...formItemLayout}>
+            {detailModel.nowData?.selectLawyer?.real_name}
+          </Form.Item>
+          <Form.Item label="所在律所" name="lawyer" {...formItemLayout}>
+            {detailModel.nowData?.selectLawyer?.extra_profile?.office}
+          </Form.Item>
+          <Form.Item label="联系方式" name="lawyer" {...formItemLayout}>
+            {detailModel.nowData?.phone}
+          </Form.Item>
+          <Form.Item label="地址" name="lawyer" {...formItemLayout}>
+            {detailModel.nowData?.selectLawyer.extra_profile?.office_address}
+          </Form.Item>
+          <Form.Item label="经历年限" name="lawyer" {...formItemLayout}>
+            {detailModel.nowData?.selectLawyer.extra_profile?.experience_year}年
+          </Form.Item>
+          <Form.Item label="律师证件" name="lawyer" {...formItemLayout}>
+            <PhotoProvider>
+              <PhotoConsumer
+                src={detailModel.nowData?.selectLawyer.extra_profile?.license_photo}
+                intro={detailModel.nowData?.selectLawyer.extra_profile?.license_photo}
+              >
+                <img src={detailModel.nowData?.selectLawyer.extra_profile?.license_photo} alt="" />
+              </PhotoConsumer>
+            </PhotoProvider>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }
@@ -542,5 +650,6 @@ const mapDispatch = (dispatch: Dispatch) => ({
   getAppealList: dispatch.sys.getAppealList,
   onAgress: dispatch.sys.onAgressAppeal,
   onReject: dispatch.sys.onRejectAppeal,
+  getCaseDetail: dispatch.sys.getCaseDetail
 });
 export default connect(mapState, mapDispatch)(UserAdminContainer);
