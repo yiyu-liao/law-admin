@@ -30,12 +30,20 @@ const { Content } = Layout;
 // ==================
 // 异步加载各路由模块
 // ==================
-const [NotFound, NoPower, Home, MenuAdmin, PowerAdmin, RoleAdmin, UserAdmin] = [
+const [
+  NotFound,
+  NoPower,
+  Home,
+  MenuAdmin,
+  AppealAdmin,
+  RoleAdmin,
+  UserAdmin,
+] = [
   () => import(`../pages/ErrorPages/404`),
   () => import(`../pages/ErrorPages/401`),
   () => import(`../pages/Home`),
   () => import(`../pages/System/MenuAdmin`),
-  () => import(`../pages/System/PowerAdmin`),
+  () => import(`../pages/System/AppealAdmin`),
   () => import(`../pages/System/RoleAdmin`),
   () => import(`../pages/System/UserAdmin`),
 ].map((item) => {
@@ -146,8 +154,8 @@ function BasicLayoutCom(props: Props): JSX.Element {
               />
               <Route
                 exact
-                path="/system/poweradmin"
-                render={(props) => onEnter(PowerAdmin, props)}
+                path="/system/appealAdmin"
+                render={(props) => onEnter(AppealAdmin, props)}
               />
               <Route
                 exact
