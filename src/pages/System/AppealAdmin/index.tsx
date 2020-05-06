@@ -243,7 +243,6 @@ function UserAdminContainer(props: Props): JSX.Element {
     const res = await props.getCaseDetail({
       case_id: data?.case.id,
     });
-    console.log(res)
     setDetailModal({
       modalShow: true,
       nowData: res?.data,
@@ -598,9 +597,17 @@ function UserAdminContainer(props: Props): JSX.Element {
             <PhotoProvider>
               <PhotoConsumer
                 src={detailModel.nowData?.selectLawyer.extra_profile?.id_photo}
-                intro={detailModel.nowData?.selectLawyer.extra_profile?.id_photo}
+                intro={
+                  detailModel.nowData?.selectLawyer.extra_profile?.id_photo
+                }
               >
-                <img src={detailModel.nowData?.selectLawyer.extra_profile?.id_photo} alt="" />
+                <img
+                  width="100"
+                  src={
+                    detailModel.nowData?.selectLawyer.extra_profile?.id_photo
+                  }
+                  alt=""
+                />
               </PhotoConsumer>
             </PhotoProvider>
           </Form.Item>
@@ -609,6 +616,9 @@ function UserAdminContainer(props: Props): JSX.Element {
           </Form.Item>
           <Form.Item label="所在律所" name="lawyer" {...formItemLayout}>
             {detailModel.nowData?.selectLawyer?.extra_profile?.office}
+          </Form.Item>
+          <Form.Item label="执业编号" name="lawyer" {...formItemLayout}>
+            {detailModel.nowData?.extra_profile?.license_no}
           </Form.Item>
           <Form.Item label="联系方式" name="lawyer" {...formItemLayout}>
             {detailModel.nowData?.phone}
@@ -622,10 +632,21 @@ function UserAdminContainer(props: Props): JSX.Element {
           <Form.Item label="律师证件" name="lawyer" {...formItemLayout}>
             <PhotoProvider>
               <PhotoConsumer
-                src={detailModel.nowData?.selectLawyer.extra_profile?.license_photo}
-                intro={detailModel.nowData?.selectLawyer.extra_profile?.license_photo}
+                src={
+                  detailModel.nowData?.selectLawyer.extra_profile?.license_photo
+                }
+                intro={
+                  detailModel.nowData?.selectLawyer.extra_profile?.license_photo
+                }
               >
-                <img src={detailModel.nowData?.selectLawyer.extra_profile?.license_photo} alt="" />
+                <img
+                  width="100"
+                  src={
+                    detailModel.nowData?.selectLawyer.extra_profile
+                      ?.license_photo
+                  }
+                  alt=""
+                />
               </PhotoConsumer>
             </PhotoProvider>
           </Form.Item>
@@ -650,6 +671,6 @@ const mapDispatch = (dispatch: Dispatch) => ({
   getAppealList: dispatch.sys.getAppealList,
   onAgress: dispatch.sys.onAgressAppeal,
   onReject: dispatch.sys.onRejectAppeal,
-  getCaseDetail: dispatch.sys.getCaseDetail
+  getCaseDetail: dispatch.sys.getCaseDetail,
 });
 export default connect(mapState, mapDispatch)(UserAdminContainer);

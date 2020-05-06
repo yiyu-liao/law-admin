@@ -454,7 +454,11 @@ function RoleAdminContainer(props: Props): JSX.Element {
                 src={modal.nowData?.extra_profile?.id_photo}
                 intro={modal.nowData?.extra_profile?.id_photo}
               >
-                <img src={modal.nowData?.extra_profile?.id_photo} alt="" />
+                <img
+                  width="100"
+                  src={modal.nowData?.extra_profile?.id_photo}
+                  alt=""
+                />
               </PhotoConsumer>
             </PhotoProvider>
           </Form.Item>
@@ -463,6 +467,9 @@ function RoleAdminContainer(props: Props): JSX.Element {
           </Form.Item>
           <Form.Item label="所在律所" name="lawyer" {...formItemLayout}>
             {modal.nowData?.extra_profile?.office}
+          </Form.Item>
+          <Form.Item label="执业编号" name="lawyer" {...formItemLayout}>
+            {modal.nowData?.extra_profile?.license_no}
           </Form.Item>
           <Form.Item label="联系方式" name="lawyer" {...formItemLayout}>
             {modal.nowData?.phone}
@@ -479,7 +486,11 @@ function RoleAdminContainer(props: Props): JSX.Element {
                 src={modal.nowData?.extra_profile?.license_photo}
                 intro={modal.nowData?.extra_profile?.license_photo}
               >
-                <img src={modal.nowData?.extra_profile?.license_photo} alt="" />
+                <img
+                  width="100"
+                  src={modal.nowData?.extra_profile?.license_photo}
+                  alt=""
+                />
               </PhotoConsumer>
             </PhotoProvider>
           </Form.Item>
