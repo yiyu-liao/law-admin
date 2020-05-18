@@ -454,6 +454,7 @@ function UserAdminContainer(props: Props): JSX.Element {
             <Button
               type="primary"
               size="small"
+              disabled={record.status !== 0}
               onClick={() => onAggress(record)}
             >
               同意
@@ -464,6 +465,7 @@ function UserAdminContainer(props: Props): JSX.Element {
             <Button
               type="danger"
               size="small"
+              disabled={record.status !== 0}
               onClick={() => onModalShow(record, "reject")}
             >
               拒绝
@@ -573,7 +575,7 @@ function UserAdminContainer(props: Props): JSX.Element {
           </Form.Item>
           <Form.Item label="订单状态" name="changeStatus">
             <Radio.Group onChange={rejectCaseStatusChange}>
-              <Radio value={2}>继续服务</Radio>
+              {/* <Radio value={2}>继续服务</Radio> */}
               <Radio value={6}>结束订单</Radio>
             </Radio.Group>
           </Form.Item>

@@ -275,12 +275,13 @@ function RoleAdminContainer(props: Props): JSX.Element {
     onGetData({ pageNum, pageSize });
   };
 
-  const onAggress = async (id: number): Promise<void> => {
+  const onAggress = async (id: number, openid: string | any): Promise<void> => {
     const res: Res = await props.updateUserStatus({
       user_id: id,
       base_info: {
         verify_status: 3,
       },
+      openid,
     });
     if (res?.code === "S_Ok") {
       onGetData(page);
@@ -363,7 +364,7 @@ function RoleAdminContainer(props: Props): JSX.Element {
               type="primary"
               size="small"
               disabled={record.verify_status === 3}
-              onClick={() => onAggress(record.id)}
+              onClick={() => onAggress(record.id, record?.openid)}
             >
               同意
             </Button>
@@ -406,6 +407,7 @@ function RoleAdminContainer(props: Props): JSX.Element {
         key: index,
         id: item.id,
         real_name: item.real_name,
+        openid: item.openid,
         phone: item.phone,
         username: item.username,
         password: item.password,

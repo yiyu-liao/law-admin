@@ -10,6 +10,7 @@ export interface TableRecordData {
   id: number;
   username: string;
   password: string;
+  openid?: string;
   real_name: string; // 真实名字
   phone: string | number; // 手机
   role: string; // 角色

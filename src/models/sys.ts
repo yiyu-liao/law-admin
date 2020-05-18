@@ -415,11 +415,16 @@ export default {
       return;
     },
 
-    async updateUserStatus(params: { user_id: number; base_info: object }) {
+    async updateUserStatus(params: {
+      user_id: number;
+      base_info: object;
+      openid: string | any;
+    }) {
       try {
         const res: Res = await axios.post("/user/update", {
           user_id: params.user_id,
-          base_info: JSON.stringify(params.base_info)
+          base_info: JSON.stringify(params.base_info),
+          openid: params.openid,
         });
         return res;
       } catch (err) {
